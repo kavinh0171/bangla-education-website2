@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Generation Test</title>
+    <style>
+        body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .correct {
+            background: #e8f5e8;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #2E7D32;
+            color: white;
+        }
+        button:hover {
+            background: #1B5E20;
+        }
+        .error {
+            color: red;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>MCQ Generation Test</h1>
+        
+        <div class="test-section">
+            <h2>Configuration Status</h2>
+            <div id="configStatus"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Sample Chapter Content</h2>
+            <div id="sampleContent">
+                <p><strong>অধ্যায় ১: বাংলা ভাষার ইতিহাস</strong></p>
+                <p>বাংলা ভাষা ইন্দো-ইউরোপীয় ভাষা পরিবারের অন্তর্গত একটি ভাষা। এটি প্রাচীন ভারতীয় আর্য ভাষা থেকে উৎপন্ন হয়েছে। বাংলা ভাষার বিকাশ ঘটেছে প্রায় হাজার বছর ধরে।</p>
+                <p>প্রাচীনকালে এই অঞ্চলে সংস্কৃত ভাষার প্রচলন ছিল। পরবর্তীতে পালি ও প্রাকৃত ভাষার মাধ্যমে বাংলা ভাষার জন্ম হয়। অপভ্রংশ থেকে বাংলা ভাষার সরাসরি উৎপত্তি।</p>
+                <p>বাংলা ভাষার প্রাচীনতম নিদর্শন হলো চর্যাপদ। এটি দশম থেকে দ্বাদশ শতাব্দীর মধ্যে রচিত হয়েছিল। চর্যাপদে ৪৭টি পদ রয়েছে এবং এগুলো বৌদ্ধ সহজিয়া সাধকদের রচনা।</p>
+            </div>
+            
+            <button onclick="testMCQGeneration()">Generate MCQ Questions</button>
+            <button onclick="testSampleQuestions()">Test Sample Questions</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test Results</h2>
+            <div id="testResults"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Generated Questions</h2>
+            <div id="generatedQuestions"></div>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="config.js"></script>
+    <script src="js/quiz-generator.js" onload="console.log('QuizGenerator script loaded')" onerror="console.error('Failed to load QuizGenerator script')"></script>
+    
+    <script>
+        // Wait for scripts to load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkConfiguration();
+        });
+        
+        // Test functions
+        function checkConfiguration() {
+            const statusDiv = document.getElementById('configStatus');
+            
+            if (typeof window.CONFIG === 'undefined') {
+                statusDiv.innerHTML = '<div class="error">Configuration not loaded</div>';
+                return false;
+            }
+            
+            const isConfigured = window.isApiKeyConfigured ? window.isApiKeyConfigured() : false;
+            
+            if (isConfigured) {
+                statusDiv.innerHTML = '<div class="success">✓ API Key configured</div>';
+            } else {
+                statusDiv.innerHTML = '<div class="error">⚠ API Key not configured - will use sample questions</div>';
+            }
+            
+            return true;
+        }
+        
+        async function testMCQGeneration() {
+            const resultsDiv = document.getElementById('testResults');
+            const questionsDiv = document.getElementById('generatedQuestions');
+            
+            resultsDiv.innerHTML = '<div>Testing MCQ generation...</div>';
+            questionsDiv.innerHTML = '';
+            
+            try {
+                const quizGenerator = new QuizGenerator();
+                const sampleContent = document.getElementById('sampleContent').textContent;
+                
+                const questions = await quizGenerator.generateQuestions(sampleContent, 5);
+                
+                if (questions && questions.length > 0) {
+                    resultsDiv.innerHTML = `<div class="success">✓ Successfully generated ${questions.length} questions</div>`;
+                    displayQuestions(questions);
+                } else {
+                    resultsDiv.innerHTML = '<div class="error">✗ No questions generated</div>';
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testSampleQuestions() {
+            const resultsDiv = document.getElementById('testResults');
+            const questionsDiv = document.getElementById('generatedQuestions');
+            
+            resultsDiv.innerHTML = '<div>Testing sample questions...</div>';
+            questionsDiv.innerHTML = '';
+            
+            try {
+                const quizGenerator = new QuizGenerator();
+                const questions = quizGenerator.generateSampleQuestions(5);
+                
+                if (questions && questions.length > 0) {
+                    resultsDiv.innerHTML = `<div class="success">✓ Successfully loaded ${questions.length} sample questions</div>`;
+                    displayQuestions(questions);
+                } else {
+                    resultsDiv.innerHTML = '<div class="error">✗ No sample questions available</div>';
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            }
+        }
+        
+        function displayQuestions(questions) {
+            const questionsDiv = document.getElementById('generatedQuestions');
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                let optionsHtml = '';
+                q.options.forEach((option, optIndex) => {
+                    const isCorrect = optIndex === q.correctAnswer;
+                    optionsHtml += `<div class="option ${isCorrect ? 'correct' : ''}">${String.fromCharCode(65 + optIndex)}) ${option}</div>`;
+                });
+                
+                questionDiv.innerHTML = `
+                    <h4>প্রশ্ন ${index + 1}: ${q.question}</h4>
+                    <div class="options">${optionsHtml}</div>
+                `;
+                
+                questionsDiv.appendChild(questionDiv);
+            });
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            checkConfiguration();
+        });
+    </script>
+</body>
+</html>
+

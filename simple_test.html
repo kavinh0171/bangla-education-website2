@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple MCQ Test</title>
+    <style>
+        body { font-family: 'Noto Sans Bengali', sans-serif; margin: 20px; }
+        .question { margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 5px; }
+        .option { margin: 5px 0; padding: 5px; }
+        .correct { background: #e8f5e8; font-weight: bold; }
+        button { padding: 10px 20px; margin: 10px; background: #2E7D32; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Simple MCQ Generation Test</h1>
+    <button onclick="testSampleQuestions()">Generate Sample Questions</button>
+    <div id="results"></div>
+
+    <script>
+        // Inline QuizGenerator class for testing
+        class QuizGenerator {
+            generateSampleQuestions(questionCount) {
+                const sampleQuestions = [
+                    {
+                        question: "বাংলাদেশের রাজধানী কোনটি?",
+                        options: ["ঢাকা", "চট্টগ্রাম", "সিলেট", "রাজশাহী"],
+                        correctAnswer: 0
+                    },
+                    {
+                        question: "বাংলা ভাষার উৎপত্তি কোন ভাষা থেকে?",
+                        options: ["সংস্কৃত", "পালি", "প্রাকৃত", "অপভ্রংশ"],
+                        correctAnswer: 3
+                    },
+                    {
+                        question: "একুশে ফেব্রুয়ারি কোন দিবস?",
+                        options: ["স্বাধীনতা দিবস", "বিজয় দিবস", "শহীদ দিবস", "জাতীয় দিবস"],
+                        correctAnswer: 2
+                    },
+                    {
+                        question: "বাংলাদেশের জাতীয় ফুল কোনটি?",
+                        options: ["গোলাপ", "শাপলা", "জুঁই", "বেলি"],
+                        correctAnswer: 1
+                    },
+                    {
+                        question: "বাংলা সাহিত্যের আদি নিদর্শন কোনটি?",
+                        options: ["চর্যাপদ", "মনসামঙ্গল", "রামায়ণ", "মহাভারত"],
+                        correctAnswer: 0
+                    }
+                ];
+                
+                return sampleQuestions.slice(0, Math.min(questionCount, sampleQuestions.length));
+            }
+        }
+
+        function testSampleQuestions() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Generating questions...</p>';
+            
+            try {
+                const quizGenerator = new QuizGenerator();
+                const questions = quizGenerator.generateSampleQuestions(5);
+                
+                if (questions && questions.length > 0) {
+                    displayQuestions(questions);
+                } else {
+                    resultsDiv.innerHTML = '<p style="color: red;">No questions generated</p>';
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        function displayQuestions(questions) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<h2>Generated ${questions.length} Questions:</h2>`;
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                let optionsHtml = '';
+                q.options.forEach((option, optIndex) => {
+                    const isCorrect = optIndex === q.correctAnswer;
+                    optionsHtml += `<div class="option ${isCorrect ? 'correct' : ''}">${String.fromCharCode(65 + optIndex)}) ${option}</div>`;
+                });
+                
+                questionDiv.innerHTML = `
+                    <h4>প্রশ্ন ${index + 1}: ${q.question}</h4>
+                    <div>${optionsHtml}</div>
+                `;
+                
+                resultsDiv.appendChild(questionDiv);
+            });
+        }
+    </script>
+</body>
+</html>
+

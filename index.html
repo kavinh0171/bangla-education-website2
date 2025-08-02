@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলা শিক্ষা সহায়ক - Bangla Education Helper</title>
+    <meta name="description" content="বই থেকে প্রশ্ন তৈরি করুন - Create questions from books using AI">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+    
+    <!-- Configuration -->
+    <script src="config.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-bangla">বাংলা শিক্ষা সহায়ক</span>
+                    <span class="logo-english">Bangla Education Helper</span>
+                </h1>
+                <div class="language-toggle">
+                    <button id="langToggle" class="lang-btn">English</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Landing Page -->
+        <section id="landingPage" class="page active">
+            <div class="container">
+                <div class="hero">
+                    <h2 class="hero-title" data-bn="বই থেকে প্রশ্ন তৈরি করুন" data-en="Create Questions from Books">
+                        বই থেকে প্রশ্ন তৈরি করুন
+                    </h2>
+                    <p class="hero-subtitle" data-bn="আপনার পাঠ্যবই আপলোড করুন এবং AI দিয়ে অধ্যায়ভিত্তিক প্রশ্ন তৈরি করুন" data-en="Upload your textbooks and create chapter-wise questions using AI">
+                        আপনার পাঠ্যবই আপলোড করুন এবং AI দিয়ে অধ্যায়ভিত্তিক প্রশ্ন তৈরি করুন
+                    </p>
+                </div>
+
+                <!-- Upload Area -->
+                <div class="upload-section">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📄</div>
+                        <h3 data-bn="PDF ফাইল আপলোড করুন" data-en="Upload PDF File">PDF ফাইল আপলোড করুন</h3>
+                        <p data-bn="ফাইল এখানে টেনে আনুন অথবা ক্লিক করুন" data-en="Drag and drop file here or click to browse">
+                            ফাইল এখানে টেনে আনুন অথবা ক্লিক করুন
+                        </p>
+                        <input type="file" id="fileInput" accept=".pdf" hidden>
+                        <div class="file-info">
+                            <small data-bn="সমর্থিত ফরম্যাট: PDF | সর্বোচ্চ আকার: 50MB" data-en="Supported format: PDF | Max size: 50MB">
+                                সমর্থিত ফরম্যাট: PDF | সর্বোচ্চ আকার: 50MB
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">📤</div>
+                        <h3 data-bn="ফাইল আপলোড" data-en="File Upload">ফাইল আপলোড</h3>
+                        <p data-bn="PDF বই সহজেই আপলোড করুন" data-en="Easily upload PDF books">PDF বই সহজেই আপলোড করুন</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔍</div>
+                        <h3 data-bn="টেক্সট নিষ্কাশন" data-en="Text Extraction">টেক্সট নিষ্কাশন</h3>
+                        <p data-bn="OCR দিয়ে বাংলা টেক্সট পড়ুন" data-en="Read Bangla text with OCR">OCR দিয়ে বাংলা টেক্সট পড়ুন</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">❓</div>
+                        <h3 data-bn="প্রশ্ন তৈরি" data-en="Question Generation">প্রশ্ন তৈরি</h3>
+                        <p data-bn="AI দিয়ে MCQ প্রশ্ন তৈরি করুন" data-en="Generate MCQ questions with AI">AI দিয়ে MCQ প্রশ্ন তৈরি করুন</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Processing Page -->
+        <section id="processingPage" class="page">
+            <div class="container">
+                <div class="processing-content">
+                    <div class="progress-circle">
+                        <svg class="progress-ring" width="120" height="120">
+                            <circle class="progress-ring-circle" cx="60" cy="60" r="54"></circle>
+                        </svg>
+                        <div class="progress-text">
+                            <span id="progressPercent">0%</span>
+                        </div>
+                    </div>
+                    
+                    <h2 id="processingTitle" data-bn="প্রক্রিয়াকরণ চলছে..." data-en="Processing...">
+                        প্রক্রিয়াকরণ চলছে...
+                    </h2>
+                    
+                    <p id="processingStatus" data-bn="PDF ফাইল পড়া হচ্ছে..." data-en="Reading PDF file...">
+                        PDF ফাইল পড়া হচ্ছে...
+                    </p>
+                    
+                    <div class="processing-steps">
+                        <div class="step active" id="step1">
+                            <div class="step-icon">📄</div>
+                            <span data-bn="PDF পড়া" data-en="Reading PDF">PDF পড়া</span>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-icon">🔍</div>
+                            <span data-bn="টেক্সট নিষ্কাশন" data-en="Text Extraction">টেক্সট নিষ্কাশন</span>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-icon">📚</div>
+                            <span data-bn="অধ্যায় খোঁজা" data-en="Finding Chapters">অধ্যায় খোঁজা</span>
+                        </div>
+                    </div>
+                    
+                    <button id="cancelBtn" class="btn btn-secondary" data-bn="বাতিল করুন" data-en="Cancel">
+                        বাতিল করুন
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter Selection Page -->
+        <section id="chapterPage" class="page">
+            <div class="container">
+                <div class="chapter-header">
+                    <h2 data-bn="অধ্যায় নির্বাচন করুন" data-en="Select Chapter">অধ্যায় নির্বাচন করুন</h2>
+                    <p id="chapterCount" data-bn="মোট অধ্যায়: 0" data-en="Total chapters: 0">মোট অধ্যায়: 0</p>
+                </div>
+                
+                <div class="chapter-content">
+                    <div class="chapter-list" id="chapterList">
+                        <!-- Chapters will be dynamically added here -->
+                    </div>
+                    
+                    <div class="chapter-preview" id="chapterPreview">
+                        <h3 data-bn="অধ্যায়ের পূর্বরূপ" data-en="Chapter Preview">অধ্যায়ের পূর্বরূপ</h3>
+                        <div class="preview-content" id="previewContent">
+                            <p data-bn="একটি অধ্যায় নির্বাচন করুন" data-en="Select a chapter to preview">একটি অধ্যায় নির্বাচন করুন</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chapter-actions">
+                    <button id="backToUpload" class="btn btn-secondary" data-bn="নতুন ফাইল" data-en="New File">
+                        নতুন ফাইল
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Generation Page -->
+        <section id="quizGenPage" class="page">
+            <div class="container">
+                <div class="quiz-gen-content">
+                    <div class="loading-animation">
+                        <div class="ai-icon">🤖</div>
+                        <div class="loading-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    
+                    <h2 data-bn="প্রশ্ন তৈরি করা হচ্ছে..." data-en="Generating Questions...">
+                        প্রশ্ন তৈরি করা হচ্ছে...
+                    </h2>
+                    
+                    <p id="selectedChapter" data-bn="নির্বাচিত অধ্যায়:" data-en="Selected Chapter:">
+                        নির্বাচিত অধ্যায়:
+                    </p>
+                    
+                    <div class="quiz-options">
+                        <div class="option-group">
+                            <label data-bn="প্রশ্নের সংখ্যা:" data-en="Number of Questions:">প্রশ্নের সংখ্যা:</label>
+                            <select id="questionCount">
+                                <option value="5">৫টি</option>
+                                <option value="10" selected>১০টি</option>
+                                <option value="15">১৫টি</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Page -->
+        <section id="quizPage" class="page">
+            <div class="container">
+                <div class="quiz-header">
+                    <div class="quiz-progress">
+                        <span id="questionNumber">প্রশ্ন ১/১০</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quiz-content">
+                    <div class="question-card">
+                        <h3 id="questionText">প্রশ্ন লোড হচ্ছে...</h3>
+                        
+                        <div class="options" id="optionsContainer">
+                            <!-- Options will be dynamically added -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-navigation">
+                        <button id="prevBtn" class="btn btn-secondary" disabled data-bn="পূর্ববর্তী" data-en="Previous">
+                            পূর্ববর্তী
+                        </button>
+                        <button id="nextBtn" class="btn btn-primary" disabled data-bn="পরবর্তী" data-en="Next">
+                            পরবর্তী
+                        </button>
+                        <button id="submitQuiz" class="btn btn-success" style="display: none;" data-bn="জমা দিন" data-en="Submit">
+                            জমা দিন
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Page -->
+        <section id="resultsPage" class="page">
+            <div class="container">
+                <div class="results-content">
+                    <div class="score-display">
+                        <div class="score-circle">
+                            <span id="scoreText">০/১০</span>
+                        </div>
+                        <h2 id="scoreMessage" data-bn="চমৎকার!" data-en="Excellent!">চমৎকার!</h2>
+                        <p id="scorePercentage">০%</p>
+                    </div>
+                    
+                    <div class="results-actions">
+                        <button id="reviewAnswers" class="btn btn-primary" data-bn="উত্তর পর্যালোচনা" data-en="Review Answers">
+                            উত্তর পর্যালোচনা
+                        </button>
+                        <button id="tryAgain" class="btn btn-secondary" data-bn="আবার চেষ্টা" data-en="Try Again">
+                            আবার চেষ্টা
+                        </button>
+                        <button id="newChapter" class="btn btn-outline" data-bn="নতুন অধ্যায়" data-en="New Chapter">
+                            নতুন অধ্যায়
+                        </button>
+                    </div>
+                    
+                    <div class="answer-review" id="answerReview" style="display: none;">
+                        <!-- Answer review will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p data-bn="বাংলা শিক্ষা সহায়ক - বিনামূল্যে শিক্ষার জন্য তৈরি" data-en="Bangla Education Helper - Made for free education">
+                বাংলা শিক্ষা সহায়ক - বিনামূল্যে শিক্ষার জন্য তৈরি
+            </p>
+            <p>
+                <small data-bn="প্রযুক্তি: Tesseract.js, PDF.js, Google Gemini AI" data-en="Technology: Tesseract.js, PDF.js, Google Gemini AI">
+                    প্রযুক্তি: Tesseract.js, PDF.js, Google Gemini AI
+                </small>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Application Scripts -->
+    <script src="js/language.js"></script>
+    <script src="js/pdf-processor.js"></script>
+    <script src="js/ocr-processor.js"></script>
+    <script src="js/chapter-detector.js"></script>
+    <script src="js/quiz-generator.js"></script>
+    <script src="js/quiz-interface.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+
